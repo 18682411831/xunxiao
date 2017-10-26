@@ -1,5 +1,6 @@
 package com.gbm.mgb.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -7,9 +8,12 @@ import lombok.Data;
  * Created by Waylon on 2017/9/27.
  */
 @Data
+@AllArgsConstructor
 public class AccountCredentials {
 
     private String username;
     private String password;
+
+
 
 }

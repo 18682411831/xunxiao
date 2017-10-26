@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -46,8 +47,13 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             throws AuthenticationException, IOException, ServletException {
 
         // JSON反序列化成 AccountCredentials
-        AccountCredentials creds = new ObjectMapper().readValue(req.getInputStream(), AccountCredentials.class);
-
+        //AccountCredentials creds = new ObjectMapper().readValue(req.getInputStream(), AccountCredentials.class);
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        if(StringUtils.isEmpty(username.trim())||StringUtils.isEmpty(password.trim())){
+            throw new ServletException("账户名或密码为空");
+        }
+        AccountCredentials creds = new AccountCredentials(username,password);
         // 返回一个验证令牌
         return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(

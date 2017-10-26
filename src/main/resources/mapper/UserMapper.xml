@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.gbm.mgb.dao.UserMapper">
-  <resultMap id="BaseResultMap" type="com.gbm.mgb.domain.User">
+<mapper namespace="com.gbm.mgb.domain.rbac.UserMapper">
+  <resultMap id="BaseResultMap" type="com.gbm.mgb.domain.rbac.User">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+    <result column="oranization" jdbcType="VARCHAR" property="oranization" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
   </resultMap>
 </mapper>

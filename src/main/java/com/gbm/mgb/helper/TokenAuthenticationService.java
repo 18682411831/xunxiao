@@ -3,7 +3,9 @@ package com.gbm.mgb.helper;
 import com.alibaba.fastjson.JSON;
 import com.gbm.mgb.core.Result;
 import com.gbm.mgb.core.ResultGenerator;
+import com.gbm.mgb.core.ServiceException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +38,7 @@ public class TokenAuthenticationService {
      * token失效毫秒
      */
     @Value("${jwt.expire-millisecond}")
-    private static Long EXPIRE_MILLISECOND = 300000l;
+    private static Long EXPIRE_MILLISECOND = 3000000l;
 
 
     /**
@@ -47,7 +49,6 @@ public class TokenAuthenticationService {
     public static void createAuthentication(HttpServletResponse response, String username){
         // 生成JWT
         String JWT = Jwts.builder()
-
                 // TODO 保存权限（角色）
                 .claim("authorities", "ROLE_ADMIN,AUTH_WRITE")
                 // 用户名写入标题
@@ -75,7 +76,7 @@ public class TokenAuthenticationService {
 
         if (token != null) {
             // 解析 Token
-            Claims claims = Jwts.parser()
+           Claims claims = Jwts.parser()
                     // 验签
                     .setSigningKey(SECRET)
                     // 去掉 Bearer

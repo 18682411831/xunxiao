@@ -8,30 +8,34 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4;
 import com.gbm.mgb.core.Result;
 import com.gbm.mgb.core.ResultCode;
 import com.gbm.mgb.core.ServiceException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,6 +47,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     private final Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
     @Value("${spring.profiles.active}")
     private String env;//当前激活的配置文件
+
+
 
 
     @Override
@@ -57,16 +63,37 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     //使用阿里 FastJson 作为JSON MessageConverter
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+
         FastJsonHttpMessageConverter4 converter = new FastJsonHttpMessageConverter4();
         FastJsonConfig config = new FastJsonConfig();
+        JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        config.setDateFormat("yyyy-MM-dd HH:mm:ss");
         config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,//保留空的字段
                 SerializerFeature.WriteNullStringAsEmpty,//String null -> ""
-                SerializerFeature.WriteNullNumberAsZero);//Number null -> 0
+                SerializerFeature.WriteNullNumberAsZero,//Number null -> 0
+                SerializerFeature.WriteDateUseDateFormat);
         converter.setFastJsonConfig(config);
         converter.setDefaultCharset(Charset.forName("UTF-8"));
         converters.add(converter);
+
     }
 
+    @Bean
+    public Converter<String, Date> addNewConvert() {
+        return new Converter<String, Date>() {
+            @Override
+            public Date convert(String source) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                 Date date = null;
+            try {
+                date = sdf.parse((String) source);
+                } catch (Exception e) {
+                e.printStackTrace();
+                }
+             return date;
+            }
+        };
+    }
 
     //统一异常处理
     @Override
@@ -81,6 +108,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                     result.setCode(ResultCode.NOT_FOUND).setMessage("接口 [" + request.getRequestURI() + "] 不存在");
                 } else if (e instanceof ServletException) {
                     result.setCode(ResultCode.FAIL).setMessage(e.getMessage());
+                } else if (e instanceof ExpiredJwtException) {
+                    result.setCode(ResultCode.UNAUTHORIZED).setMessage("签名过期");
                 } else {
                     result.setCode(ResultCode.INTERNAL_SERVER_ERROR).setMessage("接口 [" + request.getRequestURI() + "] 内部错误，请联系管理员");
                     String message;

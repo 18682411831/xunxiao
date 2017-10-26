@@ -1,6 +1,6 @@
 package ${basePackage}.service.impl;
 
-import ${basePackage}.dao.${modelNameUpperCamel}Mapper;
+import ${basePackage}.repository.${modelNameUpperCamel}Mapper;
 import ${basePackage}.domain.${modelNameUpperCamel};
 import ${basePackage}.service.${modelNameUpperCamel}Service;
 import ${basePackage}.core.AbstractService;

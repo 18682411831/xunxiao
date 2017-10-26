@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://120.25.152.41/mgb-ticket?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false";
+    private static final String JDBC_URL = "jdbc:mysql://120.25.152.41/gbm-seed?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false";
     private static final String JDBC_USERNAME = "root";
     private static final String JDBC_PASSWORD = "123456";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
@@ -36,8 +36,8 @@ public class CodeGenerator {
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCode("user");
-        //genCodeByCustomModelName("输入表名","输入自定义Model名称");
+        //genCode("gbm_seed_user");
+        genCodeByCustomModelName("gbm_seed_resource","Resource");
     }
 
     /**

@@ -24,7 +24,7 @@ public class Role extends BaseBean{
      */
     private String state;
 
-    private List<>
+
 
 
 }

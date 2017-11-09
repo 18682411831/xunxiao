@@ -25,7 +25,6 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             throws IOException, ServletException {
         Authentication authentication = TokenAuthenticationService
                 .getAuthentication((HttpServletRequest)request);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>"+((HttpServletRequest) request).getRequestURL());
         String url = ((HttpServletRequest) request).getRequestURL()+"";
         if (url.contains("http://DESKTOP-SNUCUQN:8080/admin")){
             filterChain.doFilter(request,response);

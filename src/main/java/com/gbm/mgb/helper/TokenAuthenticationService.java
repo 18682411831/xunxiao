@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.gbm.mgb.core.Result;
 import com.gbm.mgb.core.ResultGenerator;
 import com.gbm.mgb.core.ServiceException;
+import com.gbm.mgb.domain.rbac.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -24,7 +25,8 @@ import java.util.List;
 
 /**
  * 签名服务
- * Created by Waylon on 2017/9/27.
+ * @author waylon
+ * @date 2017/11/2
  */
 @Component
 public class TokenAuthenticationService {
@@ -38,7 +40,7 @@ public class TokenAuthenticationService {
      * token失效毫秒
      */
     @Value("${jwt.expire-millisecond}")
-    private static Long EXPIRE_MILLISECOND = 3000000l;
+    private static Long EXPIRE_MILLISECOND = 3000000L;
 
 
     /**
@@ -46,13 +48,13 @@ public class TokenAuthenticationService {
     */
     private static final String AUTH_HEADER_NAME = "x-authorization";
 
-    public static void createAuthentication(HttpServletResponse response, String username){
+    public static void createAuthentication(HttpServletResponse response, String userId){
         // 生成JWT
         String JWT = Jwts.builder()
                 // TODO 保存权限（角色）
                 .claim("authorities", "ROLE_ADMIN,AUTH_WRITE")
                 // 用户名写入标题
-                .setSubject(username)
+                .setSubject(userId)
                 // 有效期设置
                         .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_MILLISECOND))
                 // 签名设置
@@ -62,14 +64,17 @@ public class TokenAuthenticationService {
         try {
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_OK);
-            Result result = new Result();
             response.getOutputStream().println(JSON.toJSONString(ResultGenerator.genSuccessResult(JWT)));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // JWT验证方法
+    /**
+     * JWT验证方法
+     * @param request
+     * @return
+     */
     public static Authentication getAuthentication(HttpServletRequest request) {
         // 从Header中拿到token
         String token = request.getHeader(AUTH_HEADER_NAME);
@@ -83,15 +88,16 @@ public class TokenAuthenticationService {
                     .parseClaimsJws(token)
                     .getBody();
 
-            // 拿用户名
-            String user = claims.getSubject();
-
+            // 拿用户标识
+            String userId = claims.getSubject();
+            SessionThreadLocalHelper.userThreadLocal.set(new User(userId));
             // 得到 权限（角色）
             List<GrantedAuthority> authorities =  AuthorityUtils.commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
+            // 识别是否有权限
 
             // 返回验证令牌
-            return user != null ?
-                    new UsernamePasswordAuthenticationToken(user, null, authorities) :
+            return userId != null ?
+                    new UsernamePasswordAuthenticationToken(userId, null, authorities) :
                     null;
         }
         return null;

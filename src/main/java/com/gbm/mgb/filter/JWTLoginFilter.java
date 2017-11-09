@@ -47,13 +47,12 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             throws AuthenticationException, IOException, ServletException {
 
         // JSON反序列化成 AccountCredentials
-        //AccountCredentials creds = new ObjectMapper().readValue(req.getInputStream(), AccountCredentials.class);
-        String username = req.getParameter("username");
+        String email = req.getParameter("email");
         String password = req.getParameter("password");
-        if(StringUtils.isEmpty(username.trim())||StringUtils.isEmpty(password.trim())){
+        if(StringUtils.isEmpty(email.trim())||StringUtils.isEmpty(password.trim())){
             throw new ServletException("账户名或密码为空");
         }
-        AccountCredentials creds = new AccountCredentials(username,password);
+        AccountCredentials creds = new AccountCredentials(email,password);
         // 返回一个验证令牌
         return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(

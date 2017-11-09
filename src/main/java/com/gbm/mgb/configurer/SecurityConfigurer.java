@@ -3,6 +3,7 @@ package com.gbm.mgb.configurer;
 import com.gbm.mgb.filter.JWTAuthenticationFilter;
 import com.gbm.mgb.filter.JWTLoginFilter;
 import com.gbm.mgb.helper.CustomAuthenticationProvider;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,11 +19,18 @@ import javax.annotation.Resource;
 
 /**
  * spring security实现
- * Created by Waylon on 2017/9/27.
- */
+ * @author waylon
+ * @date 2017/11/02
+ **/
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurer extends  WebSecurityConfigurerAdapter {
+
+
+    @Bean
+    public CustomAuthenticationProvider getCustomAuthenticationProvider(){
+        return new CustomAuthenticationProvider();
+    }
 
     /**
     * 设置 HTTP 验证规则
@@ -40,20 +48,16 @@ public class SecurityConfigurer extends  WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/login").permitAll()
                 .antMatchers(HttpMethod.GET,
                         "/",
-                        "/v2/api-docs",           // swagger
-                        "/webjars/**",            // swagger-ui webjars
-                        "/swagger-resources/**",  // swagger-ui resources
-                        "/configuration/**",      // swagger configuration
+                        "/v2/api-docs",
+                        "/webjars/**",
+                        "/swagger-resources/**",
+                        "/configuration/**",
                         "/*.html",
                         "/favicon.ico",
                         "/**/*.html",
                         "/**/*.css",
                         "/**/*.js").permitAll()
                 .antMatchers("/admin/*").permitAll()
-                // 权限检查
-               // .antMatchers("/hello").hasAuthority("AUTH_WRITE")
-                // 角色检查
-               // .antMatchers("/world").hasRole("ADMIN")
                 // 所有请求需要身份认证
                 .anyRequest().authenticated().and()
                 // 添加一个过滤器 所有访问 /login 的请求交给 JWTLoginFilter 来处理 这个类处理所有的JWT相关内容
@@ -66,7 +70,7 @@ public class SecurityConfigurer extends  WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // 使用自定义身份验证组件
-        auth.authenticationProvider(new CustomAuthenticationProvider());
+        auth.authenticationProvider(getCustomAuthenticationProvider());
     }
 
     

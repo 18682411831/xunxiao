@@ -15,8 +15,10 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by CodeGenerator on 2017/10/11.
-*/
+ * 用户controller
+ * @author waylon
+ * @date 2017/11/2
+ */
 @RestController
 @RequestMapping("/user")
 public class UserController {

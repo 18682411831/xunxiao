@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.gbm.mgb.domain.rbac.UserMapper">
+<mapper namespace="com.gbm.mgb.domain.rbac.UserRepository">
   <resultMap id="BaseResultMap" type="com.gbm.mgb.domain.rbac.User">
     <!--
       WARNING - @mbg.generated
@@ -11,10 +11,33 @@
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="sex" jdbcType="VARCHAR" property="sex" />
     <result column="state" jdbcType="VARCHAR" property="state" />
-    <result column="oranization" jdbcType="VARCHAR" property="oranization" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
     <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
     <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+
   </resultMap>
+
+  <resultMap id="userOrganizationMap" type="com.gbm.mgb.domain.rbac.User" extends="BaseResultMap">
+    <association property="organization" javaType="com.gbm.mgb.domain.rbac.Organization" column="organization">
+      <id column="o_id" property="id" />
+      <result column="o_name" property="name" />
+    </association>
+  </resultMap>
+
+  <resultMap id="UserRoleMap" type="com.gbm.mgb.domain.rbac.User" extends="BaseResultMap">
+    <collection property="roles" column="id" select="com.gbm.mgb.domain.rbac.UserRoleRepository.getRolesByUserId"></collection>
+  </resultMap>
+  
+  <select id="findUserByUsernameAndPassword" resultMap="UserRoleMap">
+    SELECT a.id,a.name,a.email,a.sex,a.state,a.organization,a.create_date FROM gbm_seed_user a
+    WHERE a.email = #{email} AND a.password = #{password}
+  </select>
+
+
+
+
+
+
+
 </mapper>

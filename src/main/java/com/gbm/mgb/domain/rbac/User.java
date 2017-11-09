@@ -1,24 +1,23 @@
 package com.gbm.mgb.domain.rbac;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.gbm.mgb.domain.base.BaseBean;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
+
 
 /**
  * Created by Waylon on 2017/10/11.
  */
 @Table(name = "gbm_seed_user")
 @Data
+@NoArgsConstructor
 public class User extends BaseBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,6 +61,22 @@ public class User extends BaseBean {
     /**
      * 组织编号
      */
-    private String oranization;
+    @Transient
+    private Organization organization;
+
+    /**
+     * 角色列表
+     */
+    @Transient
+    private List<Role> roles;
+
+    public User(String email,String password){
+        this.email = email;
+        this.password = password;
+    }
+
+    public User(String id){
+        this.id = id;
+    }
 
 }

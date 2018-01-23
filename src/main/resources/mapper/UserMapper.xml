@@ -28,11 +28,6 @@
   <resultMap id="UserRoleMap" type="com.gbm.mgb.domain.rbac.User" extends="BaseResultMap">
     <collection property="roles" column="id" select="com.gbm.mgb.domain.rbac.UserRoleRepository.getRolesByUserId"></collection>
   </resultMap>
-  
-  <select id="findUserByUsernameAndPassword" resultMap="UserRoleMap">
-    SELECT a.id,a.name,a.email,a.sex,a.state,a.organization,a.create_date FROM gbm_seed_user a
-    WHERE a.email = #{email} AND a.password = #{password}
-  </select>
 
 
 

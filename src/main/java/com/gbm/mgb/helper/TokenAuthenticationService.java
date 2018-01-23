@@ -78,7 +78,7 @@ public class TokenAuthenticationService {
     public static Authentication getAuthentication(HttpServletRequest request) {
         // 从Header中拿到token
         String token = request.getHeader(AUTH_HEADER_NAME);
-
+        System.out.println("拿到"+token);
         if (token != null) {
             // 解析 Token
            Claims claims = Jwts.parser()
@@ -102,5 +102,31 @@ public class TokenAuthenticationService {
         }
         return null;
     }
+
+    /**
+     * 获取用户标识
+     * @param request
+     * @return
+     */
+    public static String getUserId(HttpServletRequest request) {
+        // 从Header中拿到token
+        String token = request.getHeader(AUTH_HEADER_NAME);
+        if (token != null) {
+            // 解析 Token
+            Claims claims = Jwts.parser()
+                    // 验签
+                    .setSigningKey(SECRET)
+                    // 去掉 Bearer
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            // 拿用户标识
+            String userId = claims.getSubject();
+
+            return userId;
+        }
+        return null;
+    }
+
 
 }

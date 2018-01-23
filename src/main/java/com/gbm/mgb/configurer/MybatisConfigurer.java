@@ -39,7 +39,13 @@ public class MybatisConfigurer {
 
         //添加XML目录
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        factory.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
+        factory.setMapperLocations(resolver.getResources("classpath:mapper/*/*.xml"));
+        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+        configuration.setUseGeneratedKeys(true);//使用jdbc的getGeneratedKeys获取数据库自增主键值
+        configuration.setUseColumnLabel(true);//使用列别名替换列名 select order as User
+        configuration.setMapUnderscoreToCamelCase(true);//-自动使用驼峰命名属性映射字段   userId    user_id
+        factory.setConfiguration(configuration);
+        factory.setFailFast(true);
         return factory.getObject();
     }
 

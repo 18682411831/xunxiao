@@ -7,8 +7,6 @@
         <result column="name" property="name" />
     </resultMap>
 
-    <select id="getRolesByUserId" resultMap="RolesMap" parameterType="int">
-      SELECT b.id,b.name FROM gbm_seed_user_role a,gbm_seed_role b WHERE a.user_id = #{userId} AND a.role_id = b.id
-    </select>
+
 
 </mapper>

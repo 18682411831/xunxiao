@@ -36,7 +36,7 @@ public class UserService extends AbstractService<User> implements com.gbm.mgb.co
         String userId = ObjectId.genGUID();
         User user = userRole.getUser();
         user.setId(userId);
-        //user.setOrganization("2");
+        //order.setOrganization("2");
         int result = userRepository.insert(user);
         if(result<=0){
             throw new ServiceException("用户保存失败");

@@ -47,8 +47,8 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             throws AuthenticationException, IOException, ServletException {
 
         // JSON反序列化成 AccountCredentials
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
+        String email = req.getParameter("mobilePhone");
+        String password = req.getParameter("validCode");
         if(StringUtils.isEmpty(email.trim())||StringUtils.isEmpty(password.trim())){
             throw new ServletException("账户名或密码为空");
         }
@@ -92,8 +92,8 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         Result result = new Result();
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-        result.setCode(ResultCode.UNAUTHORIZED).setMessage("签名认证失败");
-        response.getOutputStream().println(JSON.toJSONString(result));
+        result.setCode(ResultCode.UNAUTHORIZED).setMessage("验证码错误!");
+        response.getOutputStream().write(JSON.toJSONString(result).getBytes());
     }
 
 }

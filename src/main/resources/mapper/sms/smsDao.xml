@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gbm.mgb.domain.sms.SMSDao">
+    <insert id="save" parameterType = "com.gbm.mgb.dto.sms.SMS">
+        INSERT INTO CNCB_User (mobile_phone,valid_code,valid_expire,sms_content,type,sms_status,confirm_status,create_date,update_date)
+        VALUES (#{mobilePhone},#{validCode},date_add(now(), interval 300 second),#{smsContent},19,1,1,now(),now())
+    </insert>
+    <select id="findSMSByPhoneAndCode"  resultType = "com.gbm.mgb.dto.sms.SMS">
+        SELECT * FROM CNCB_User WHERE mobile_phone = #{mobilePhone} AND valid_code=#{validCode} AND type = 19 AND confirm_status = 1 AND valid_expire <![CDATA[ > ]]> now() ORDER BY create_date DESC LIMIT 1
+    </select>
+    <update id="updateCodeState" parameterType = "java.util.Map" >
+        UPDATE CNCB_User SET confirm_status = 2 WHERE valid_code = #{validCode} AND mobile_phone = #{mobilePhone}
+    </update>
+    <select id="getValidExpire" parameterType="com.gbm.mgb.dto.sms.SMS" resultType="java.util.Date">
+        SELECT valid_expire FROM CNCB_User WHERE mobile_phone = #{mobilePhone} AND type = #{type} ORDER BY valid_expire DESC LIMIT 1
+    </select>
+    <select id="findIsSend" parameterType="com.gbm.mgb.dto.sms.SMS" resultType="java.lang.Integer">
+        SELECT count(*) FROM CNCB_User WHERE mobile_phone = #{mobilePhone} AND type = #{type}
+    </select>
+
+
+</mapper>

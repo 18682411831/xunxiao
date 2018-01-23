@@ -1,12 +1,9 @@
 package com.gbm.mgb.domain.rbac;
 
 import com.gbm.mgb.domain.base.BaseBean;
-import com.sun.javafx.beans.IDProperty;
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
+import javax.persistence.Table;
 
 /**
  * Created by Waylon on 2017/10/18.
@@ -23,8 +20,4 @@ public class Role extends BaseBean{
      * 状态 1：启用 2 :停用
      */
     private String state;
-
-
-
-
 }

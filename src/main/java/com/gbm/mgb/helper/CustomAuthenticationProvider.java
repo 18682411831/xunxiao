@@ -1,7 +1,9 @@
 package com.gbm.mgb.helper;
 
 import com.gbm.mgb.domain.rbac.User;
+import com.gbm.mgb.domain.sms.SMSDao;
 import com.gbm.mgb.dto.GrantedAuthorityImpl;
+import com.gbm.mgb.dto.sms.SMS;
 import com.gbm.mgb.service.rbac.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 自定义身份认证验证组件
@@ -23,18 +27,17 @@ import java.util.ArrayList;
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
-    private UserService userService;
+    private SMSDao smsDao;
 
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         // 获取认证的用户名 & 密码
-        String name = authentication.getName();
-        String password = authentication.getCredentials().toString();
-        System.out.println(userService);
+        String mobilePhone = authentication.getName();
+        String validCode = authentication.getCredentials().toString();
+        System.out.println(smsDao);
         // TODO 认证逻辑(结合实际业务做改善)
-        User user = userService.doLogin(name,password);
-
+        SMS user = smsDao.findSMSByPhoneAndCode(mobilePhone, Integer.parseInt(validCode));
         if (user != null) {
             // 这里设置权限和角色
 
@@ -43,12 +46,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             authorities.add( new GrantedAuthorityImpl("AUTH_WRITE") );
 
             // 生成令牌
-            Authentication auth = new UsernamePasswordAuthenticationToken(user.getId(), user.getEmail(), authorities);
-
+            Authentication auth = new UsernamePasswordAuthenticationToken(user.getMobilePhone(),user.getUserId(), authorities);
+            //更新验证码状态
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("validCode", validCode);
+            map.put("mobilePhone", mobilePhone);
+            smsDao.updateCodeState(map);
 
             return auth;
         }else {
-            throw new BadCredentialsException("密码错误~");
+            throw new BadCredentialsException("验证码错误!!");
         }
     }
 

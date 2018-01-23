@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gbm.mgb.domain.order.OrderDao">
+    <select id="findCouponByTicket" resultType="com.gbm.mgb.dto.Coupon" parameterType="com.gbm.mgb.dto.Coupon">
+        SELECT * FROM coupon WHERE ticket=#{ticket} AND password=#{password}
+    </select>
+
+    <update id="updateCouponByTicket" parameterType="com.gbm.mgb.dto.Coupon">
+        UPDATE coupon SET iPhone=#{iPhone},status=#{status},create_data=now() WHERE ticket=#{ticket} AND password=#{password}
+    </update>
+
+    <select id="findCouponByIphone" parameterType="String" resultType="com.gbm.mgb.dto.Coupon">
+        SELECT * FROM coupon WHERE iPhone=#{iPhone}
+    </select>
+
+
+
+    <!--添加订单信息-->
+
+    <insert id="saveOrdersIphone" parameterType="com.gbm.mgb.dto.Orders" >
+        INSERT INTO orders VALUES (NULL ,#{phone},'','','0','','',#{name},#{ophone},#{receiveAddress},#{address},'1','','','0',now());
+    </insert>
+    <update id="updateOrdersByAddress" parameterType="com.gbm.mgb.dto.Orders">
+        UPDATE orders SET name=#{name},ophone=#{ophone},receive_address=#{receiveAddress},address=#{address} WHERE phone=#{phone}
+    </update>
+
+    <select id="findOrdersByIphone" parameterType="String" resultType="com.gbm.mgb.dto.Orders">
+        SELECT * FROM orders WHERE phone=#{phone}
+    </select>
+
+    <update id="updateOrdersAndToPlace" parameterType="com.gbm.mgb.dto.Orders">
+        UPDATE orders SET order_id=#{orderId},goods=#{goods},money=#{money} WHERE phone=#{phone}
+    </update>
+
+    <select id="findOrdersToPlayInFo" parameterType="com.gbm.mgb.dto.Orders" resultType="com.gbm.mgb.dto.Orders">
+        SELECT * FROM orders WHERE order_id=#{orderId} AND phone=#{phone} AND status='1'
+    </select>
+
+    <update id="updateOrdersByPlayNo" parameterType="com.gbm.mgb.dto.Orders">
+        UPDATE orders SET pay_no=#{payNo},play_type=#{playType} WHERE order_id=#{orderId} AND phone=#{phone} AND status='1'
+    </update>
+    <update id="updateCouponByPlayNo" parameterType="com.gbm.mgb.dto.Orders">
+        UPDATE coupon SET pay_no=#{payNo} WHERE iPhone=#{phone} AND play_status='1'
+    </update>
+
+
+    <update id="updatePayOrderStateToSuccess" parameterType="com.gbm.mgb.dto.Orders">
+        UPDATE orders SET trade_no=#{tradeNo},status=#{status} WHERE pay_no=#{payNo}
+    </update>
+    <update id="updateCouponStateToSuccess" parameterType="com.gbm.mgb.dto.Orders">
+        UPDATE coupon SET play_status=#{status},update_data=now() WHERE pay_no=#{payNo}
+    </update>
+    </mapper>
